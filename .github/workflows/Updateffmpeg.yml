@@ -1,0 +1,31 @@
+---
+name: Update ffmpeg port
+
+on:
+  schedule:
+    - cron: "0 0 * * 0" # Monday 00:00
+
+jobs:
+  Linux-apt-get:
+    runs-on: ubuntu-latest
+    name: Update ffmpeg port
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6 # Keeps the git OAuth token after checkout
+
+      - name: Check for changes to the ffmpeg, and push any changes to this repository
+        run: |
+          cd $VCPKG_INSTALLATION_ROOT
+          git fetch
+          git checkout --force origin/master
+          cd -
+          rm -rf ports/ffmpeg/
+          cp -r $VCPKG_INSTALLATION_ROOT/ports/ffmpeg ports/
+          git apply patch.diff # Add CorsixTH patch to disable everything but smacker
+          $VCPKG_INSTALLATION_ROOT/vcpkg x-add-version --overwrite-version ffmpeg
+          git config user.email "bot@vcpkg-registry.corsixth.com"
+          git config user.name "vcpkg bot"
+          git commit --all --message "ffmpeg updates from vcpkg"
+          git push
+          echo "# New vcpkg baseline sha" >> $GITHUB_STEP_SUMMARY
+          git rev-parse HEAD >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,18 @@
+diff --git a/ports/ffmpeg/portfile.cmake b/ports/ffmpeg/portfile.cmake
+index 16d29b5c8c..03397d7af2 100644
+--- a/ports/ffmpeg/portfile.cmake
++++ b/ports/ffmpeg/portfile.cmake
+@@ -600,6 +600,13 @@ else()
+     set(WITH_RUBBERBAND OFF)
+ endif()
+ 
++# Disable codecs and devices unused by CorsixTH
++set (OPTIONS "${OPTIONS} --disable-encoders")
++set (OPTIONS "${OPTIONS} --disable-decoders --enable-decoder=smacker --enable-decoder=smackaud")
++set (OPTIONS "${OPTIONS} --disable-muxers")
++set (OPTIONS "${OPTIONS} --disable-demuxers --enable-demuxer=smacker")
++set (OPTIONS "${OPTIONS} --disable-indevs")
++
+ set(OPTIONS_CROSS "--enable-cross-compile")
+ 
+ # ffmpeg needs --cross-prefix option to use appropriate tools for cross-compiling.
