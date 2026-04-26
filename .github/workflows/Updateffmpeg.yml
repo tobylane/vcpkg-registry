@@ -24,7 +24,6 @@ jobs:
           cp -r $VCPKG_INSTALLATION_ROOT/ports/ffmpeg ports/
           cp -r $VCPKG_INSTALLATION_ROOT/ports/ffmpeg-bin2c ports/
           git apply patch.diff # Add CorsixTH patch to disable everything but smacker
-          -- need to operate on this vcpkg, not the main one
           $VCPKG_INSTALLATION_ROOT/vcpkg --x-builtin-ports-root=./ports --x-builtin-registry-versions-dir=./versions \
             x-add-version --overwrite-version ffmpeg ffmpeg-bin2c
           git config user.email "bot@vcpkg-registry.corsixth.com"
