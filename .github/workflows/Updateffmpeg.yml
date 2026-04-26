@@ -4,6 +4,7 @@ name: Update ffmpeg port
 on:
   schedule:
     - cron: "0 0 * * 0" # Monday 00:00
+  push:
 
 jobs:
   Linux-apt-get:
@@ -19,13 +20,19 @@ jobs:
           git fetch
           git checkout --force origin/master
           cd -
-          rm -rf ports/ffmpeg/
+          rm -rf ports/ffmpeg/ ports/ffmpeg-bin2c/
           cp -r $VCPKG_INSTALLATION_ROOT/ports/ffmpeg ports/
+          cp -r $VCPKG_INSTALLATION_ROOT/ports/ffmpeg-bin2c ports/
           git apply patch.diff # Add CorsixTH patch to disable everything but smacker
-          $VCPKG_INSTALLATION_ROOT/vcpkg x-add-version --overwrite-version ffmpeg
+          $VCPKG_INSTALLATION_ROOT/vcpkg x-add-version --overwrite-version ffmpeg ffmpeg-bin2c
           git config user.email "bot@vcpkg-registry.corsixth.com"
           git config user.name "vcpkg bot"
-          git commit --all --message "ffmpeg updates from vcpkg"
-          git push
-          echo "# New vcpkg baseline sha" >> $GITHUB_STEP_SUMMARY
-          git rev-parse HEAD >> $GITHUB_STEP_SUMMARY
+          git add ports/ffmpeg/ ports/ffmpeg-bin2c
+          if git diff-index --quiet HEAD; then
+            git commit --all --message "ffmpeg/ffmpeg-bin2c updates from vcpkg"
+            git push
+            echo "# New vcpkg baseline sha" >> $GITHUB_STEP_SUMMARY
+            git rev-parse HEAD >> $GITHUB_STEP_SUMMARY
+          else
+            echo "# No change" >> $GITHUB_STEP_SUMMARY
+          fi
